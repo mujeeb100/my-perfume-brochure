@@ -1,103 +1,107 @@
-import Image from "next/image";
+"use client";
 
-export default function Home() {
+import { useState } from "react";
+import Navbar from "./components/Navbar"; // Adjust the path as necessary
+import { products } from "@/data/products";
+import ShopPage from "./shop/page";
+import MensPerfumesPage from "./mens-perfumes/page";
+import WomensPerfumesPage from "./womens-perfumes/page";
+import OffersPage from "./offers/page";
+import ContactPage from "./contact/page";
+
+export default function HomePage() {
+  const [activeSection, setActiveSection] = useState("home");
+
+  const renderSection = () => {
+    switch (activeSection) {
+      case "shop":
+        return <ShopPage />;
+      case "mens-perfumes":
+        return <MensPerfumesSection />;
+      case "womens-perfumes":
+        return <WomensPerfumesSection />;
+      case "offers":
+        return <OffersSection />;
+      case "contact":
+        return <ContactSection />;
+      default:
+        return <MainHomeSection />;
+    }
+  };
+
   return (
-    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="font-mono list-inside list-decimal text-sm/6 text-center sm:text-left">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] font-mono font-semibold px-1 py-0.5 rounded">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+    <>
+      <Navbar activeSection={activeSection} onChangeSection={setActiveSection} />
+      <div className="max-w-6xl mx-auto py-8 px-4">{renderSection()}</div>
+      <WhatsAppFloatingButton />
+    </>
+  );
+}
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+function MainHomeSection() {
+  return (
+    <>
+      <h1 className="text-3xl font-bold mb-6">All Perfumes Available</h1>
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
+        {products.map((perfume) => (
+          <div
+            key={perfume.id}
+            className="border rounded-lg p-4 shadow hover:shadow-lg transition"
           >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
+            <img
+              src={perfume.imageUrl}
+              alt={perfume.name}
+              className="w-full h-48 object-cover rounded-md mb-4"
             />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
-        </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
+            <h2 className="text-xl font-semibold mb-2">{perfume.name}</h2>
+            <p className="text-gray-600">{perfume.description}</p>
+          </div>
+        ))}
+      </div>
+    </>
+  );
+}
+
+function ShopSection() {
+  return <ShopPage />;
+}
+
+function MensPerfumesSection() {
+  return <MensPerfumesPage />;
+}
+
+function WomensPerfumesSection() {
+  return <WomensPerfumesPage />;
+}
+
+function OffersSection() {
+  return <OffersPage />;
+}
+
+function ContactSection() {
+  return <ContactPage />;
+}
+
+// WhatsApp Floating Button Component
+function WhatsAppFloatingButton() {
+  const phoneNumber = "+919152663080"; // Replace with your phone number with country code
+
+  return (
+    <a
+      href={`https://wa.me/${phoneNumber}`}
+      target="_blank"
+      rel="noopener noreferrer"
+      aria-label="Contact on WhatsApp"
+      className="fixed bottom-5 right-5 z-50 bg-green-500 hover:bg-green-600 p-4 rounded-full shadow-lg flex items-center justify-center transition-colors duration-300"
+    >
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        className="h-8 w-8 text-white"
+        viewBox="0 0 24 24"
+        fill="currentColor"
+      >
+        <path d="M20.52 3.48A11.95 11.95 0 0012 0C5.37 0 0 5.37 0 12c0 2.11.56 4.08 1.54 5.82L0 24l6.31-1.64a11.92 11.92 0 005.69 1.47c6.63 0 12-5.37 12-12 0-3.22-1.26-6.24-3.48-8.35zM12 21.5a9.47 9.47 0 01-4.88-1.39l-.35-.21-3.75.98.99-3.66-.22-.36A9.5 9.5 0 1121.5 12 9.44 9.44 0 0112 21.5zm5.29-7.23c-.25-.13-1.47-.72-1.7-.8-.23-.08-.4-.13-.57.13s-.65.8-.8.96-.29.2-.54.07a7.56 7.56 0 01-2.22-1.37 8.41 8.41 0 01-1.55-1.92c-.16-.27 0-.41.12-.54.12-.13.26-.29.4-.43a1.66 1.66 0 00.25-.4.61.61 0 000-.56c-.07-.13-.56-1.36-.77-1.86s-.4-.43-.56-.44h-.47a1.14 1.14 0 00-.83.39 3.51 3.51 0 00-1.09 2.62 5.17 5.17 0 002.37 3.93 8.35 8.35 0 003.93 1.5 3.49 3.49 0 002.61-1.15 2.93 2.93 0 00.8-1.64c.04-.15.03-.27 0-.37-.04-.1-.23-.15-.47-.28z" />
+      </svg>
+    </a>
   );
 }
