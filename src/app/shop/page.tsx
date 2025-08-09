@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { products } from "@/data/products";
 
 export default function ShopPage() {
@@ -12,9 +13,11 @@ export default function ShopPage() {
             key={perfume.id}
             className="border rounded-lg p-4 shadow hover:shadow-lg transition"
           >
-            <img
+            <Image
               src={perfume.imageUrl}
               alt={perfume.name}
+              width={400}
+              height={192}
               className="w-full h-48 object-cover rounded-md mb-4"
             />
             <h2 className="text-xl font-semibold mb-2">{perfume.name}</h2>

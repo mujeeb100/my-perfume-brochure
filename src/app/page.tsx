@@ -8,6 +8,7 @@ import MensPerfumesPage from "./mens-perfumes/page";
 import WomensPerfumesPage from "./womens-perfumes/page";
 import OffersPage from "./offers/page";
 import ContactPage from "./contact/page";
+import Image from "next/image";
 
 export default function HomePage() {
   const [activeSection, setActiveSection] = useState("home");
@@ -48,11 +49,13 @@ function MainHomeSection() {
             key={perfume.id}
             className="border rounded-lg p-4 shadow hover:shadow-lg transition"
           >
-            <img
-              src={perfume.imageUrl}
-              alt={perfume.name}
-              className="w-full h-48 object-cover rounded-md mb-4"
-            />
+        <Image
+      src={perfume.imageUrl}
+      alt={perfume.name}
+      width={400}          // apne hisaab se adjust karein
+      height={300}
+      className="rounded-md mb-4 object-cover"
+    />
             <h2 className="text-xl font-semibold mb-2">{perfume.name}</h2>
             <p className="text-gray-600">{perfume.description}</p>
           </div>

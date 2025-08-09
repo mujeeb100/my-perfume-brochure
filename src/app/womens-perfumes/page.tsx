@@ -1,3 +1,5 @@
+import Image from "next/image";
+
 export default function WomensPerfumesSection() {
   const womensPerfumes = [
     {
@@ -15,7 +17,12 @@ export default function WomensPerfumesSection() {
       <div>
         {womensPerfumes.map((perfume) => (
           <div key={perfume.id}>
-            <img src={perfume.imageUrl} alt={perfume.name} />
+            <Image
+              src={perfume.imageUrl}
+              alt={perfume.name}
+              width={300}
+              height={400}
+            />
             <h2>{perfume.name}</h2>
             <p>{perfume.description}</p>
           </div>

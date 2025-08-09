@@ -1,3 +1,5 @@
+import Image from "next/image";
+
 export default function MensPerfumesSection() {
   const mensPerfumes = [
     {
@@ -25,13 +27,12 @@ export default function MensPerfumesSection() {
       <h1 className="text-3xl font-bold mb-6">Men&#39;s Perfumes</h1>
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
         {mensPerfumes.map((perfume) => (
-          <div
-            key={perfume.id}
-            className="border rounded-lg p-4 shadow hover:shadow-lg transition"
-          >
-            <img
+          <div key={perfume.id}>
+            <Image
               src={perfume.imageUrl}
               alt={perfume.name}
+              width={400}
+              height={192}
               className="w-full h-48 object-cover rounded-md mb-4"
             />
             <h2 className="text-xl font-semibold mb-2">{perfume.name}</h2>
