@@ -1,6 +1,13 @@
+type ProductItem = {
+  id: string | number;
+  name: string;
+  price: number;
+  // Add other specific fields as needed
+};
+
 type ProductCategoryProps = {
   title: string;
-  items: { id: string | number; [key: string]: any }[];
+  items: ProductItem[];
 };
 
 export default function ProductCategory({ title, items }: ProductCategoryProps) {

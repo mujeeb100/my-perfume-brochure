@@ -1,12 +1,14 @@
 import { auth } from "./auth";
-// import { NextRequest } from "next/server";
+import { NextResponse } from "next/server";
 
 export default auth((req) => {
-  if (!req.auth && req.nextUrl.pathname.startsWith("/edit-photo")) {
-    return Response.redirect(new URL("/login", req.nextUrl));
+  const { pathname } = req.nextUrl;
+
+  if (!req.auth && pathname.startsWith("/edit-photo")) {
+    return NextResponse.redirect(new URL("/login", req.nextUrl));
   }
 });
 
 export const config = {
-  matcher: ["/edit-photo"],
+  matcher: ["/edit-photo/:path*"], // Protect /edit-photo and all its subpages
 };
