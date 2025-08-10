@@ -6,7 +6,7 @@ import { ReactNode } from "react";
 
 interface ProvidersProps {
   children: ReactNode;
-  session: Session | null;
+  session?: Session | null; // optional with null allowed
 }
 
 export function Providers({ children, session }: ProvidersProps) {
