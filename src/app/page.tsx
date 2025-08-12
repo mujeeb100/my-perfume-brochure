@@ -10,6 +10,7 @@ import WomensPerfumesPage from "./womens-perfumes/page";
 import ContactPage from "./contact/page";
 import Image from "next/image";
 
+export const dynamic = "force-dynamic";
 export default function HomePage() {
   const [activeSection, setActiveSection] = useState("home");
 
