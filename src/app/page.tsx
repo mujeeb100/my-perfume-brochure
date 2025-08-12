@@ -1,32 +1,215 @@
 "use client";
 
-import { useState } from "react";
-import Navbar from "./components/Navbar"; // Adjust the path as necessary
-import { products } from "@/data/products";
+import { useState, useEffect } from "react";
+import { useSession } from "next-auth/react";
+import Navbar from "./components/Navbar";
+import { products as initialProducts } from "@/data/products";
 import ShopPage from "./shop/page";
 import MensPerfumesPage from "./mens-perfumes/page";
 import WomensPerfumesPage from "./womens-perfumes/page";
-import OffersPage from "./offers/page";
 import ContactPage from "./contact/page";
 import Image from "next/image";
 
 export default function HomePage() {
   const [activeSection, setActiveSection] = useState("home");
 
+  // State for products and new product
+  const { data: session } = useSession();
+  const [products, setProducts] = useState(initialProducts);
+  const [newProduct, setNewProduct] = useState({
+    name: "",
+    description: "",
+    file: null as File | null,
+    filePreview: "",
+  });
+
+  // Load from localStorage on mount
+  useEffect(() => {
+    const saved = localStorage.getItem("products");
+    if (saved) setProducts(JSON.parse(saved));
+  }, []);
+
+  // Save to localStorage when products change
+  useEffect(() => {
+    localStorage.setItem("products", JSON.stringify(products));
+  }, [products]);
+
+  // Handle input changes for name and description
+  const handleNewProductChange = (field: "name" | "description", value: string) => {
+    setNewProduct((prev) => ({ ...prev, [field]: value }));
+  };
+
+  // Handle file select and generate preview URL
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      // Check file type (png or jpg/jpeg)
+      if (!file.type.match("image/png") && !file.type.match("image/jpeg")) {
+        alert("Please upload a PNG or JPG image.");
+        return;
+      }
+
+      setNewProduct({
+        ...newProduct,
+        file,
+        filePreview: URL.createObjectURL(file),
+      });
+    }
+  };
+
+  // Add new product to list
+  const handleAdd = () => {
+    if (!newProduct.name.trim()) {
+      alert("Please enter the perfume name.");
+      return;
+    }
+    if (!newProduct.file) {
+      alert("Please choose an image file to upload.");
+      return;
+    }
+
+    const newItem = {
+      id: Date.now().toString(),
+      name: newProduct.name,
+      description: newProduct.description,
+      imageUrl: newProduct.filePreview,
+    };
+
+    setProducts([...products, newItem]);
+    setNewProduct({ name: "", description: "", file: null, filePreview: "" });
+  };
+
+  const handleUpdate = (id: string, field: string, value: string) => {
+    setProducts(products.map((p) => (p.id === id ? { ...p, [field]: value } : p)));
+  };
+
+  const handleDelete = (id: string) => {
+    setProducts(products.filter((p) => p.id !== id));
+  };
+
   const renderSection = () => {
     switch (activeSection) {
       case "shop":
         return <ShopPage />;
       case "mens-perfumes":
-        return <MensPerfumesSection />;
+        return <MensPerfumesPage />;
       case "womens-perfumes":
-        return <WomensPerfumesSection />;
-      case "offers":
-        return <OffersSection />;
+        return <WomensPerfumesPage />;
       case "contact":
-        return <ContactSection />;
+        return <ContactPage />;
       default:
-        return <MainHomeSection />;
+        return (
+          <>
+            <h1 className="text-3xl font-bold mb-6">All Perfumes Available</h1>
+
+           {session && (
+  <div className="mb-8 p-6 border rounded bg-gray-50 max-w-6xl mx-auto">
+    <h2 className="text-2xl font-semibold mb-6">Add New Perfume</h2>
+
+    <div className="flex flex-col sm:flex-row sm:items-center sm:space-x-4">
+      {/* Name input */}
+      <input
+        type="text"
+        placeholder="Name"
+        value={newProduct.name}
+        onChange={(e) => handleNewProductChange("name", e.target.value)}
+        className="border rounded px-4 py-2 mb-4 sm:mb-0 flex-grow focus:outline-none focus:ring-2 focus:ring-pink-400"
+      />
+
+      {/* Description textarea */}
+      <textarea
+        placeholder="Description"
+        value={newProduct.description}
+        onChange={(e) => handleNewProductChange("description", e.target.value)}
+        className="border rounded px-4 py-2 mb-4 sm:mb-0 flex-grow resize-none h-20 focus:outline-none focus:ring-2 focus:ring-pink-400"
+      />
+
+      {/* File input and label */}
+      <div className="flex items-center space-x-4 mb-4 sm:mb-0">
+        <label
+          htmlFor="file-upload"
+          className="cursor-pointer bg-pink-500 hover:bg-pink-600 text-white px-5 py-2 rounded inline-block text-center transition"
+        >
+          Choose Image (PNG or JPG)
+        </label>
+        <input
+          id="file-upload"
+          type="file"
+          accept="image/png, image/jpeg"
+          onChange={handleFileChange}
+          className="hidden"
+        />
+      </div>
+
+      {/* Image preview */}
+      {newProduct.filePreview && (
+        <div className="mb-4 sm:mb-0">
+          <Image
+            src={newProduct.filePreview}
+            alt="Preview"
+            width={100}
+            height={100}
+            className="rounded border"
+          />
+        </div>
+      )}
+
+      {/* Add button */}
+      <button
+        onClick={handleAdd}
+        className="bg-pink-500 hover:bg-pink-600 text-white px-6 py-3 rounded whitespace-nowrap"
+      >
+        Add Perfume
+      </button>
+    </div>
+  </div>
+)}
+
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
+              {products.map((perfume) => (
+                <div
+                  key={perfume.id}
+                  className="border rounded-lg p-4 shadow hover:shadow-lg transition"
+                >
+                  {perfume.imageUrl ? (
+                    <Image src={perfume.imageUrl} alt={perfume.name} width={400} height={400} />
+                  ) : (
+                    <div className="w-[400px] h-[400px] flex items-center justify-center bg-gray-200 text-gray-500">
+                      No Image
+                    </div>
+                  )}
+
+                  {session ? (
+                    <>
+                      <input
+                        value={perfume.name}
+                        onChange={(e) => handleUpdate(perfume.id, "name", e.target.value)}
+                        className="border p-1 w-full mb-2 rounded"
+                      />
+                      <textarea
+                        value={perfume.description}
+                        onChange={(e) => handleUpdate(perfume.id, "description", e.target.value)}
+                        className="border p-1 w-full mb-2 rounded"
+                      />
+                      <button
+                        onClick={() => handleDelete(perfume.id)}
+                        className="bg-red-500 text-white px-3 py-1 rounded"
+                      >
+                        Delete
+                      </button>
+                    </>
+                  ) : (
+                    <>
+                      <h2 className="text-xl font-semibold mb-2">{perfume.name}</h2>
+                      <p className="text-gray-600">{perfume.description}</p>
+                    </>
+                  )}
+                </div>
+              ))}
+            </div>
+          </>
+        );
     }
   };
 
@@ -39,55 +222,9 @@ export default function HomePage() {
   );
 }
 
-function MainHomeSection() {
-  return (
-    <>
-      <h1 className="text-3xl font-bold mb-6">All Perfumes Available</h1>
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
-        {products.map((perfume) => (
-          <div
-            key={perfume.id}
-            className="border rounded-lg p-4 shadow hover:shadow-lg transition"
-          >
-        <Image
-      src={perfume.imageUrl}
-      alt={perfume.name}
-      width={400}          // apne hisaab se adjust karein
-      height={300}
-      className="rounded-md mb-4 object-cover"
-    />
-            <h2 className="text-xl font-semibold mb-2">{perfume.name}</h2>
-            <p className="text-gray-600">{perfume.description}</p>
-          </div>
-        ))}
-      </div>
-    </>
-  );
-}
-
-function ShopSection() {
-  return <ShopPage />;
-}
-
-function MensPerfumesSection() {
-  return <MensPerfumesPage />;
-}
-
-function WomensPerfumesSection() {
-  return <WomensPerfumesPage />;
-}
-
-function OffersSection() {
-  return <OffersPage />;
-}
-
-function ContactSection() {
-  return <ContactPage />;
-}
-
 // WhatsApp Floating Button Component
 function WhatsAppFloatingButton() {
-  const phoneNumber = "+919152663080"; // Replace with your phone number with country code
+  const phoneNumber = "+919152663080";
 
   return (
     <a

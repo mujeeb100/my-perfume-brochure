@@ -21,16 +21,24 @@
 // }
 "use client";
 
-// import Navbar from "./components/Navbar"; // aapke folder ke hisaab se sahi path likho
+import { SessionProvider } from "next-auth/react";
+import Footer from "./components/Footer"; // adjust path if needed
 import "./globals.css";
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   return (
     <html lang="en">
-      <body>
-        {/* <Navbar /> */}
-        <main>{children}</main>
+      <body className="flex flex-col min-h-screen">
+        <SessionProvider>{children}</SessionProvider>
+        <Footer />
       </body>
     </html>
   );
 }
+
+
+

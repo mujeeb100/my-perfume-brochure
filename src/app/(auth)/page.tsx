@@ -1,9 +1,9 @@
-import { AuthButton } from "@/components/AuthButton";
+import React from 'react'
 
-export default function AuthPage() {
+function page() {
   return (
-    <div>
-      <AuthButton />
-    </div>
-  );
+    <div>page</div>
+  )
 }
+
+export default page
